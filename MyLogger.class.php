@@ -1,65 +1,58 @@
 <?php
+
 class MyLogger
 {
-    private $class;
-
-    public function __construct($class)
-    {
-        if (!empty($class)) {
-            $this->class = $class;
-        } else {
-            print 'Invalid classname';
-            exit();
-        }
-    }
-    public function log($message, $type)
-    {
-        switch ($type) {
-            case 'INFO':
-                $this->info($message);
-                break;
-            case 'ERROR':
-                $this->error($message);
-                break;
-            case 'warning':
-                $this->warning($message);
-                break;
-            case 'debug':
-                $this->debug($message);
-                break;
-            default:
-                print($type . $this->formattedMessage($message));
-        }
-    }
-    public function warning($message)
-    {
-        print($this->logWithTime() . 'WARNING' . $this->formattedMessage($message));
-    }
-    public function error($message)
-    {
-        print($this->logWithTime() . 'ERROR' . $this->formattedMessage($message));
-    }
-    public function info($message)
-    {
-        print($this->logWithTime() . 'INFO' . $this->formattedMessage($message));
-    }
-    public function debug($message)
-    {
-        print($this->logWithTime() . 'DEBUG' . $this->formattedMessage($message));
-    }
-    private function formattedMessage($message): string
-    {
-        return ": " . $message . "\n";
-    }
-    private function logWithTime(): string
-    {
-        $date = date("D M d, Y G:i");
-        return "[$date]" . " " . "$this->class " . '- ';
-    }
+	public $origin;
+	
+	public function __construct($origin = "")
+	{
+		if ($origin == "" || $origin == null) {
+			die("[ERROR] Logger constructor needs origin!");
+		}
+		$this -> origin = $origin;
+	}
+	
+	private function logWithTime()
+	{
+		echo "[" . date('Y-m-d H:i:s') . "] ";
+	}
+	
+	private function log($message, $level)
+	{
+		$this -> logWithTime();
+		echo $this -> origin . " - " . strtoupper($level) . ": " . $message . PHP_EOL;
+	}
+	
+	public function warning($message)
+	{
+		$this -> log($message, "warning");
+	}
+	
+	public function error($message)
+	{
+		$this -> log($message, "error");
+	}
+	
+	public function info($message)
+	{
+		$this -> log($message, "info");
+	}
+	
+	public function debug($message)
+	{
+		$this -> log($message, "debug");
+	}
+	
+	public function setOrigin($origin)
+	{
+		$this -> origin = $origin;
+	}
 }
-$logger = new MyLogger("test_class");
-$logger->log("Hello world!", "ERROR");
-$logger->warning("Hello world!");
-$logger->error("Hello world!");
-$logger->info("Hello world!");
-$logger->debug("Hello world!");
+
+$users = new MyLogger("User");
+$visits = new MyLogger("Visits");
+
+$users -> error("Incorrect password!");
+$visits -> debug("HTTP 1/1 GET /login.php 200");
+
+?>
